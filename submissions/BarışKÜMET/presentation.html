@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acme Security Incident Analysis</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/night.min.css">
+    <style>
+        /* main styles */
+        .reveal h1, .reveal h2, .reveal h3 { 
+            text-transform: none; 
+            margin-bottom: 15px !important;
+        }
+        .reveal h1 { font-size: 2.2em !important; }
+        .reveal h2 { font-size: 1.8em !important; }
+        .reveal h3 { font-size: 1.3em !important; }
+        .reveal p { font-size: 0.85em !important; margin: 8px 0 !important; }
+        .reveal ul { font-size: 0.8em !important; }
+        .reveal li { margin: 5px 0 !important; }
+        
+        /* make everything fit on screen */
+        .reveal .slides section {
+            height: 100%;
+            padding: 20px !important;
+        }
+        
+        .critical { color: #dc3545; font-weight: bold; }
+        .high { color: #ffc107; font-weight: bold; }
+        .medium { color: #007bff; font-weight: bold; }
+        
+        .timeline { 
+            display: flex; 
+            justify-content: space-around; 
+            margin: 15px 0;
+            font-size: 0.7em;
+        }
+        .timeline-item { 
+            text-align: center; 
+            padding: 8px; 
+        }
+        
+        /* evidence box - smaller */
+        .evidence { 
+            background: #2a2a2a; 
+            padding: 10px; 
+            border-left: 3px solid #dc3545;
+            font-family: monospace;
+            font-size: 0.55em;
+            text-align: left;
+            max-height: 280px;
+            overflow-y: auto;
+            line-height: 1.4;
+        }
+        
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            font-size: 0.85em;
+        }
+        
+        .vulnerability-box {
+            background: #1a1a1a;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 8px 0;
+        }
+        .vulnerability-box h3 {
+            font-size: 1.1em !important;
+            margin-bottom: 8px !important;
+        }
+        
+        .code-block {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            padding: 8px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.6em;
+            text-align: left;
+            margin: 8px 0;
+            line-height: 1.3;
+        }
+        
+        .good { color: #28a745; }
+        .bad { color: #dc3545; }
+        
+        .stat-box {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 8px;
+            border: 2px solid #dc3545;
+        }
+        .stat-number { 
+            font-size: 1.6em; 
+            color: #dc3545; 
+            font-weight: bold; 
+        }
+        
+        .layer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 5px;
+            font-size: 0.7em;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            
+            <!-- title slide -->
+            <section>
+                <h1>Security Incident Analysis</h1>
+                <h3>Acme Financial Services</h3>
+                <h3>Trading Platform Breach</h3>
+                <p>October 15, 2024</p>
+                <br>
+                <p><small>Security Analyst Candidate</small></p>
+                <p><small>November 8, 2024</small></p>
+            </section>
+
+            <!-- overview -->
+            <section>
+                <h2>Incident Overview</h2>
+                <p>Coordinated multi-stage attack spanning 10 hours</p>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div style="background: #dc3545; padding: 10px; border-radius: 5px;">Phase 1</div>
+                        <p><small>09:00 UTC<br>Phishing</small></p>
+                    </div>
+                    <div class="timeline-item">
+                        <div style="background: #dc3545; padding: 10px; border-radius: 5px;">Phase 2</div>
+                        <p><small>09:18 UTC<br>Initial Access</small></p>
+                    </div>
+                    <div class="timeline-item">
+                        <div style="background: #dc3545; padding: 10px; border-radius: 5px;">Phase 3</div>
+                        <p><small>09:20 UTC<br>SQL Injection</small></p>
+                    </div>
+                    <div class="timeline-item">
+                        <div style="background: #dc3545; padding: 10px; border-radius: 5px;">Phase 4</div>
+                        <p><small>06:47 UTC<br>API Exploitation</small></p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <div class="stat-box" style="display: inline-block;">
+                        <div class="stat-number">15</div>
+                        <div>Accounts Compromised</div>
+                    </div>
+                    <div class="stat-box" style="display: inline-block;">
+                        <div class="stat-number">892KB</div>
+                        <div>Data Exfiltrated</div>
+                    </div>
+                </div>
+                
+                
+                <p><small><span class="critical">Attacker IP:</span> 203.0.113.45</small></p>
+            </section>
+
+            <!-- phishing -->
+            <section>
+                <h2>Phase 1: Phishing Campaign</h2>
+                <h3>09:00:23 UTC</h3>
+                
+                <div class="evidence">
+timestamp,from,to,subject,link_clicked,ip_address
+2024-10-15 09:00:23,security@acme-finance.com,user1@acme.com,
+URGENT: Verify Your Account - Action Required,yes,203.0.113.45
+2024-10-15 09:00:25,security@acme-finance.com,user2@acme.com,
+URGENT: Verify Your Account - Action Required,no,
+2024-10-15 09:00:27,security@acme-finance.com,user3@acme.com,
+URGENT: Verify Your Account - Action Required,yes,203.0.113.45
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <p><span class="critical">Domain Typosquatting:</span></p>
+                    <p><span class="bad">✗ security@acme-finance.com</span> (malicious)</p>
+                    <p><span class="good">✓ security@acme.com</span> (legitimate)</p>
+                </div>
+
+                <div class="stat-box" style="margin-top: 20px;">
+                    <div class="stat-number">50%</div>
+                    <div>Click Rate (3 out of 6 users)</div>
+                </div>
+            </section>
+
+            <!-- SQL injection stuff -->
+            <section>
+                <h2>Phase 3: SQL Injection</h2>
+                <h3>09:20:30 - 09:23:45 UTC</h3>
+                
+                <div class="evidence">
+09:20:30 | ticker=AAPL' OR 1=1-- 
+         | Response: 403 BLOCKED by WAF
+
+09:21:15 | ticker=AAPL'; DROP TABLE users--
+         | Response: 403 BLOCKED by WAF
+
+09:22:00 | ticker=AAPL' UNION SELECT * FROM users--
+         | Response: 403 BLOCKED by WAF
+
+<span class="critical">09:23:45 | ticker=AAPL' /*!50000OR*/ 1=1--
+         | Response: 200 OK - SUCCESS (156KB data)</span>
+
+09:24:10 | /dashboard/export?format=csv
+         | Response: 200 OK (892KB exfiltrated)
+                </div>
+
+                <p><span class="critical">MySQL Comment Bypass</span> - WAF signature evasion</p>
+                <p><small>The /*!50000OR*/ syntax is a MySQL-specific version comment that the WAF failed to detect</small></p>
+            </section>
+
+            <!-- API attack -->
+            <section>
+                <h2>Phase 4: Broken Access Control</h2>
+                <h3>06:46:30 - 06:47:57 UTC</h3>
+                
+                <div class="evidence">
+User 1523 authenticated at 06:45:10
+
+<span class="critical">Sequential account enumeration (every 3 seconds):</span>
+06:47:15 | GET /api/v1/portfolio/1524 | 200 OK
+06:47:18 | GET /api/v1/portfolio/1525 | 200 OK
+06:47:21 | GET /api/v1/portfolio/1526 | 200 OK
+06:47:24 | GET /api/v1/portfolio/1527 | 200 OK
+...
+06:47:57 | GET /api/v1/portfolio/1538 | 200 OK
+
+<span class="critical">All unauthorized access attempts succeeded!</span>
+                </div>
+
+                <p><span class="critical">IDOR Vulnerability (CWE-639)</span></p>
+                <p><small>API validates JWT token but not resource ownership</small></p>
+                
+                <div class="stat-box">
+                    <div class="stat-number">15</div>
+                    <div>Customer Portfolios Accessed Without Authorization</div>
+                </div>
+            </section>
+
+            <!-- vulnerabilities -->
+            <section>
+                <h2>Root Cause Analysis</h2>
+                
+                <div class="vulnerability-box">
+                    <h3 class="critical">1. Broken Access Control (API)</h3>
+                    <div class="two-columns">
+                        <div>
+                            <p><span class="bad">❌ Current Code:</span></p>
+                            <div class="code-block">
+if user.is_authenticated():
+    return get_portfolio(
+        account_id
+    )
+                            </div>
+                        </div>
+                        <div>
+                            <p><span class="good">✓ Fixed Code:</span></p>
+                            <div class="code-block">
+if user.is_authenticated():
+    if user.id == account_id:
+        return get_portfolio(
+            account_id
+        )
+    else:
+        return 403 Forbidden
+                            </div>
+                        </div>
+                    </div>
+                    <p><small>One missing line led to 15 accounts compromised</small></p>
+                </div>
+
+                <div class="vulnerability-box">
+                    <h3 class="critical">2. SQL Injection</h3>
+                    <p>String concatenation instead of parameterized queries</p>
+                    <p>WAF bypass using MySQL-specific syntax</p>
+                </div>
+
+                <div class="vulnerability-box">
+                    <h3 class="high">3. Email Security</h3>
+                    <p>No SPF/DKIM/DMARC validation</p>
+                    <p>No domain typosquatting protection</p>
+                </div>
+            </section>
+
+            <!-- architecture diagram -->
+            <section>
+                <h2>Improved Security Architecture</h2>
+                <h3>Defense-in-Depth Strategy</h3>
+                
+                <div style="text-align: left; max-width: 800px; margin: 0 auto;">
+                    <div class="layer">
+                        <strong>Layer 1: Perimeter Security</strong><br>
+                        Email Security Gateway • SPF/DKIM/DMARC • Anti-phishing • DDoS Protection
+                    </div>
+                    
+                    <div class="layer">
+                        <strong>Layer 2: Application Gateway</strong><br>
+                        Advanced WAF (OWASP ModSecurity) • Rate Limiting • API Gateway • OAuth 2.0
+                    </div>
+                    
+                    <div class="layer">
+                        <strong>Layer 3: Application Security</strong><br>
+                        ORM Framework • Authorization Middleware • Input Validation • MFA
+                    </div>
+                    
+                    <div class="layer">
+                        <strong>Layer 4: Data Layer</strong><br>
+                        Database Firewall • Query Whitelisting • Encryption at Rest • Row-Level Security
+                    </div>
+                    
+                    <div class="layer">
+                        <strong>Layer 5: Monitoring & Response</strong><br>
+                        SIEM Integration • Anomaly Detection • 24/7 SOC • Incident Response
+                    </div>
+                </div>
+                
+                <p style="margin-top: 20px;"><small>If one layer fails, others provide backup protection</small></p>
+            </section>
+
+            <!-- MITRE mapping -->
+            <section>
+                <h2>MITRE ATT&CK Framework</h2>
+                
+                <div style="text-align: left; max-width: 700px; margin: 0 auto;">
+                    <div class="vulnerability-box">
+                        <strong>T1566.002</strong> - Phishing: Spearphishing Link<br>
+                        <small>Malicious emails with urgent call to action</small>
+                    </div>
+                    
+                    <div class="vulnerability-box">
+                        <strong>T1078</strong> - Valid Accounts<br>
+                        <small>Credential harvesting via phishing landing page</small>
+                    </div>
+                    
+                    <div class="vulnerability-box">
+                        <strong>T1190</strong> - Exploit Public-Facing Application<br>
+                        <small>SQL injection in web application</small>
+                    </div>
+                    
+                    <div class="vulnerability-box">
+                        <strong>T1213</strong> - Data from Information Repositories<br>
+                        <small>Database exfiltration (892KB)</small>
+                    </div>
+                    
+                    <div class="vulnerability-box">
+                        <strong>T1087.004</strong> - Account Discovery<br>
+                        <small>Sequential API account enumeration</small>
+                    </div>
+                </div>
+                
+                <p style="margin-top: 20px;"><span class="high">OWASP:</span> A01 (Broken Access Control) • A03 (Injection)</p>
+            </section>
+
+            <!-- recommendations -->
+            <section>
+                <h2>Remediation Roadmap</h2>
+                
+                <div class="two-columns" style="text-align: left; font-size: 0.7em;">
+                    <div>
+                        <h3 class="critical">Immediate (0-24h)</h3>
+                        <ul>
+                            <li>Block attacker IP: 203.0.113.45</li>
+                            <li>Force password resets</li>
+                            <li>Invalidate all JWT tokens</li>
+                            <li>Deploy emergency WAF rule</li>
+                            <li>Enable detailed API logging</li>
+                        </ul>
+                        
+                        <h3 class="high" style="margin-top: 20px;">Short-term (1-2 weeks)</h3>
+                        <ul>
+                            <li>Fix API authorization bug</li>
+                            <li>Implement parameterized queries</li>
+                            <li>Add rate limiting (10 req/min)</li>
+                            <li>Configure email authentication</li>
+                            <li>Deploy MFA for all users</li>
+                            <li>Security awareness training</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="medium">Long-term (1-3 months)</h3>
+                        <ul>
+                            <li>Migrate to ORM framework</li>
+                            <li>Implement API Gateway</li>
+                            <li>Deploy SIEM solution</li>
+                            <li>Establish continuous security testing</li>
+                            <li>Achieve SOC 2 Type II compliance</li>
+                            <li>Conduct penetration testing</li>
+                            <li>Zero Trust architecture</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p style="margin-top: 20px;"><strong>Priority:</strong> Authorization fix & parameterized queries</p>
+            </section>
+
+            <!-- business impact -->
+            <section>
+                <h2>Business Impact & Compliance</h2>
+                
+                <div class="stat-box">
+                    <h3>Data Breach</h3>
+                    <p>15 customer accounts • Portfolio data • Transaction history</p>
+                </div>
+                
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="vulnerability-box">
+                        <h3>Regulatory Impact</h3>
+                        <ul style="font-size: 0.8em; text-align: left;">
+                            <li><strong>GDPR:</strong> 72-hour notification requirement</li>
+                            <li><strong>Fines:</strong> Up to €10M or 2% annual revenue</li>
+                            <li><strong>PCI-DSS:</strong> Report to payment card brands</li>
+                            <li><strong>Local Laws:</strong> Turkey KVKK compliance</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="vulnerability-box">
+                        <h3>Business Risk</h3>
+                        <ul style="font-size: 0.8em; text-align: left;">
+                            <li>Customer trust erosion</li>
+                            <li>Reputational damage</li>
+                            <li>Mandatory breach notifications</li>
+                            <li>Potential customer churn</li>
+                            <li>Increased insurance premiums</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p style="margin-top: 20px;"><span class="critical">Prevention cost << Incident cost</span></p>
+            </section>
+
+            <!-- wrap up -->
+            <section>
+                <h2>Conclusion</h2>
+                
+                <div style="text-align: left; max-width: 700px; margin: 0 auto;">
+                    <h3>Key Findings</h3>
+                    <ul>
+                        <li>Multi-stage attack exploiting <span class="critical">social engineering</span>, <span class="critical">application vulnerabilities</span>, and <span class="critical">insufficient controls</span></li>
+                        <li>15 customer accounts compromised due to broken access control</li>
+                        <li>SQL injection bypass demonstrated inadequate WAF coverage</li>
+                        <li>Phishing campaign succeeded due to missing email security</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 30px;">Path Forward</h3>
+                    <ul>
+                        <li>All vulnerabilities are fixable with <span class="good">established best practices</span></li>
+                        <li>Proposed architecture follows <span class="good">OWASP, NIST, ISO 27001</span></li>
+                        <li>Defense-in-depth provides <span class="good">layered protection</span></li>
+                        <li>Continuous security testing prevents future incidents</li>
+                    </ul>
+                </div>
+                
+                <h3 style="margin-top: 40px;">Thank You</h3>
+                <p><small>Questions?</small></p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.min.js"></script>
+    <script>
+        // reveal.js config
+        Reveal.initialize({
+            hash: true,
+            transition: 'slide',
+            controls: true,
+            progress: true,
+            center: true,
+            slideNumber: true
+        });
+    </script>
+</body>
+</html>
